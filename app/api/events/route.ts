@@ -40,6 +40,12 @@ export async function POST(req: Request) {
 
     const data = parsed.data;
     // normalizing price
+    data.price =
+      data.eventType == "FREE"
+        ? null
+        : data.price
+        ? Number(data.price).toPrecision(2)
+        : null;
 
     await db.insert(events).values({
       title: data.title,
