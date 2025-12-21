@@ -1,5 +1,11 @@
 "use client";
-export const Pagination = () => {
+export const Pagination = ({
+  pageFn,
+  pages,
+}: {
+  pages: number;
+  pageFn: React.Dispatch<React.SetStateAction<number>>;
+}) => {
   return (
     <div className="mt-8 flex items-center gap-2">
       <button className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#161b22] text-[#c9d1d9] transition-colors hover:bg-[#21262d]">
@@ -19,7 +25,7 @@ export const Pagination = () => {
       </button>
 
       <div className="flex items-center gap-1 rounded-lg bg-[#161b22] p-1">
-        {[1, 2, 3, 4, 5].map((page) => (
+        {Array.from({ length: pages }, (_, i) => i + 1).map((page) => (
           <button
             key={page}
             className={`flex h-8 w-8 items-center justify-center rounded-md text-sm font-medium transition-colors ${
@@ -27,6 +33,7 @@ export const Pagination = () => {
                 ? "bg-[#1d4ed8] text-white"
                 : "text-[#8b949e] hover:text-[#c9d1d9] hover:bg-[#21262d]"
             }`}
+            onClick={() => pageFn(page)}
           >
             {page}
           </button>

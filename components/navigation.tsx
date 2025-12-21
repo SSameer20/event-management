@@ -21,9 +21,8 @@ export default function Navigation() {
           <BreadcrumbList>
             {/* Root */}
             <BreadcrumbItem>
-              <BreadcrumbLink href="/dashboard">
-                Event Management
-              </BreadcrumbLink>
+              <BreadcrumbLink href="/">Event Management</BreadcrumbLink>
+              <BreadcrumbSeparator />
             </BreadcrumbItem>
 
             {segments.map((segment, index) => {
@@ -32,7 +31,6 @@ export default function Navigation() {
 
               return (
                 <div key={href} className="flex items-center">
-                  <BreadcrumbSeparator />
                   <BreadcrumbItem>
                     {isLast ? (
                       <span className="capitalize text-white">
@@ -43,6 +41,7 @@ export default function Navigation() {
                         {segment.replace(/-/g, " ")}
                       </BreadcrumbLink>
                     )}
+                    {!isLast && <BreadcrumbSeparator />}
                   </BreadcrumbItem>
                 </div>
               );

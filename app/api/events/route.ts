@@ -5,6 +5,7 @@ import { createEventSchema } from "@/lib/validators/event";
 import redis, { redis_key, IDEMPOTENCY_TTL } from "@/lib/redis";
 import { count, desc, eq } from "drizzle-orm";
 import { tags } from "@/db/schema/tags";
+import { EventsResponse } from "@/events";
 type RouteParams = {
   params: {
     id: string;
@@ -94,15 +95,7 @@ export async function GET(req: Request, { params }: RouteParams) {
     const cached = await redis.get(key);
 
     if (cached) {
-      return NextResponse.json(
-        {
-          success: true,
-          error: false,
-          data: JSON.parse(cached),
-          message: "Event fetched",
-        },
-        { status: 200 }
-      );
+      return NextResponse.json(JSON.parse(cached), { status: 200 });
     }
 
     const data = await db
@@ -136,23 +129,20 @@ export async function GET(req: Request, { params }: RouteParams) {
       );
     }
 
-    await redis.set(key, JSON.stringify(data), "EX", IDEMPOTENCY_TTL);
-
-    return NextResponse.json(
-      {
-        success: true,
-        error: false,
-        data,
-        message: "Event fetched",
-        meta: {
-          page,
-          limit,
-          total,
-          totalPages: Math.ceil(total / limit),
-        },
+    const response = {
+      success: true,
+      error: false,
+      data,
+      message: "Event fetched",
+      meta: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit),
       },
-      { status: 200 }
-    );
+    };
+    await redis.set(key, JSON.stringify(response), "EX", IDEMPOTENCY_TTL);
+    return NextResponse.json(response, { status: 200 });
   } catch (err) {
     console.error(err);
     return NextResponse.json(
