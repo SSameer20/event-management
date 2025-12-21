@@ -80,12 +80,10 @@ export default function CreateEvent() {
                         Date
                       </label>
                       <div className="relative">
-                        <Input
-                          type="time"
-                          id="time-picker"
-                          step="1"
-                          defaultValue="10:30:00"
-                          className="appearance-none border border-gray-700 [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none w-full bg-[#111827]"
+                        <CalendarComponent
+                          date={date}
+                          setDate={setDate}
+                          className={"bg-[#111827]"}
                         />
                       </div>
                     </div>
@@ -98,10 +96,12 @@ export default function CreateEvent() {
                           className="absolute left-3 top-3 text-gray-500"
                           size={16}
                         />
-                        <CalendarComponent
-                          date={date}
-                          setDate={setDate}
-                          className={"bg-[#111827]"}
+                        <Input
+                          type="time"
+                          id="time-picker"
+                          step="1"
+                          defaultValue="10:30"
+                          className="appearance-none border border-gray-700 [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none w-full bg-[#111827]"
                         />
                       </div>
                     </div>
