@@ -3,7 +3,7 @@ import { db } from "@/db";
 import { events } from "@/db/schema/event";
 import { deleteEventSchema, updateEventSchema } from "@/lib/validators/event";
 import type { UpdateEvent } from "@/db/types";
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import redis, { redis_key, IDEMPOTENCY_TTL } from "@/lib/redis";
 import { error } from "console";
 type RouteContext = {
@@ -45,7 +45,7 @@ export async function GET(req: Request, context: RouteContext) {
         updatedAt: events.updatedAt,
       })
       .from(events)
-      .where(eq(events.id, eventId))
+      .where(and(eq(events.id, eventId), eq(events.isActive, true)))
       .limit(1);
 
     if (!event) {
@@ -100,14 +100,13 @@ export async function PUT(req: Request, context: RouteContext) {
     const exists = await db
       .select({ id: events.id })
       .from(events)
-      .where(eq(events.id, eventId))
+      .where(and(eq(events.id, eventId), eq(events.isActive, true)))
       .limit(1);
 
     if (exists.length === 0) {
       return NextResponse.json({ error: "Event not found" }, { status: 404 });
     }
 
-    // 2️⃣ Map DTO → DB model explicitly
     const updateData: UpdateEvent = {};
 
     if (parsed.data.title) updateData.title = parsed.data.title;
@@ -126,7 +125,10 @@ export async function PUT(req: Request, context: RouteContext) {
 
     if (parsed.data.endTime) updateData.endTime = new Date(parsed.data.endTime);
 
-    await db.update(events).set(updateData).where(eq(events.id, eventId));
+    await db
+      .update(events)
+      .set(updateData)
+      .where(and(eq(events.id, eventId), eq(events.isActive, true)));
     await redis.set(
       key,
       JSON.stringify({ id: eventId }),
@@ -183,7 +185,7 @@ export async function DELETE(req: Request, context: RouteContext) {
     const exists = await db
       .select({ id: events.id })
       .from(events)
-      .where(eq(events.id, eventId))
+      .where(and(eq(events.id, eventId), eq(events.isActive, true)))
       .limit(1);
 
     if (exists.length === 0) {
@@ -196,7 +198,7 @@ export async function DELETE(req: Request, context: RouteContext) {
     await db
       .update(events)
       .set({ isActive: false })
-      .where(eq(events.id, eventId));
+      .where(and(eq(events.id, eventId), eq(events.isActive, true)));
     await redis.set(
       key,
       JSON.stringify({ id: eventId }),

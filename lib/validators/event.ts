@@ -35,6 +35,12 @@ export const updateEventSchema = z.object({
 
   isPublic: z.boolean().optional(),
   status: z.enum(["DRAFT", "PUBLISHED", "CANCELLED"]).optional(),
+  eventType: z.enum(["FREE", "PAID"]).optional(),
+  price: z
+    .string()
+    .regex(/^\d{1,8}(\.\d{1,2})?$/, "Invalid price format")
+    .nullable()
+    .optional(),
 });
 
 export const deleteEventSchema = z

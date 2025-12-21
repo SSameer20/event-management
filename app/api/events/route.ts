@@ -3,7 +3,7 @@ import { db } from "@/db";
 import { events } from "@/db/schema/event";
 import { createEventSchema } from "@/lib/validators/event";
 import redis, { redis_key, IDEMPOTENCY_TTL } from "@/lib/redis";
-import { count, desc } from "drizzle-orm";
+import { count, desc, eq } from "drizzle-orm";
 type RouteParams = {
   params: {
     id: string;
@@ -112,8 +112,11 @@ export async function GET(req: Request, { params }: RouteParams) {
         isPublic: events.isPublic,
         createdAt: events.createdAt,
         updatedAt: events.updatedAt,
+        eventType: events.eventType,
+        price: events.price,
       })
       .from(events)
+      .where(eq(events.isActive, true))
       .orderBy(desc(events.createdAt))
       .limit(limit)
       .offset(offset);
