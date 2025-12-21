@@ -1,23 +1,83 @@
 import { NextResponse } from "next/server";
 import { db } from "@/db";
 import { events } from "@/db/schema/event";
-import { updateEventSchema } from "@/lib/validators/event";
+import { deleteEventSchema, updateEventSchema } from "@/lib/validators/event";
 import type { UpdateEvent } from "@/db/types";
 import { eq } from "drizzle-orm";
 import redis, { redis_key, IDEMPOTENCY_TTL } from "@/lib/redis";
+import { error } from "console";
 type RouteContext = {
   params: Promise<{
     id: string;
   }>;
 };
+export async function GET(req: Request, context: RouteContext) {
+  try {
+    const { id: eventId } = await context.params;
+    const key = redis_key("event", "get", eventId);
+    const redisExists = await redis.get(key);
+    if (redisExists) {
+      console.log("cache hit");
+      return NextResponse.json(
+        {
+          success: true,
+          error: false,
+          data: JSON.parse(redisExists),
+          message: "Event fetched",
+        },
+        { status: 200 }
+      );
+    }
 
+    const [event] = await db
+      .select({
+        id: events.id,
+        title: events.title,
+        description: events.description,
+        startTime: events.startTime,
+        endTime: events.endTime,
+        timezone: events.timezone,
+        locationType: events.locationType,
+        location: events.location,
+        status: events.status,
+        isPublic: events.isPublic,
+        createdAt: events.createdAt,
+        updatedAt: events.updatedAt,
+      })
+      .from(events)
+      .where(eq(events.id, eventId))
+      .limit(1);
+
+    if (!event) {
+      return NextResponse.json(
+        { success: true, error: false, message: "No Event found", data: null },
+        { status: 200 }
+      );
+    }
+    await redis.set(key, JSON.stringify(event), "EX", IDEMPOTENCY_TTL);
+
+    return NextResponse.json(
+      { success: true, error: false, message: "Event fetched", data: event },
+      { status: 200 }
+    );
+  } catch (err) {
+    console.error(err);
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
+  }
+}
 export async function PUT(req: Request, context: RouteContext) {
   try {
     const { id: eventId } = await context.params;
     const key = redis_key("event", "update", eventId);
     const redisExists = await redis.get(key);
     if (redisExists) {
-      return NextResponse.json({ id: eventId }, { status: 200 });
+      return NextResponse.json(
+        { id: eventId, message: "Event updated" },
+        { status: 200 }
+      );
     }
 
     const json = await req.json();
@@ -74,7 +134,80 @@ export async function PUT(req: Request, context: RouteContext) {
       IDEMPOTENCY_TTL
     );
 
-    return NextResponse.json({ message: "Event updated" }, { status: 200 });
+    return NextResponse.json(
+      { id: eventId, message: "Event updated" },
+      { status: 200 }
+    );
+  } catch (err) {
+    console.error(err);
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
+  }
+}
+
+export async function DELETE(req: Request, context: RouteContext) {
+  try {
+    const { id: eventId } = await context.params;
+    if (!eventId) {
+      return NextResponse.json(
+        { message: "event id required" },
+        { status: 404 }
+      );
+    }
+    const key = redis_key("event", "delete", eventId);
+    const redisExists = await redis.get(key);
+    if (redisExists) {
+      return NextResponse.json(
+        { id: eventId, message: "Event Deleted" },
+        { status: 200 }
+      );
+    }
+
+    const parsed = deleteEventSchema.safeParse(eventId);
+    if (!parsed.success) {
+      return NextResponse.json(
+        { error: "Validation failed", issues: parsed.error.flatten() },
+        { status: 400 }
+      );
+    }
+
+    if (Object.keys(parsed.data).length === 0) {
+      return NextResponse.json(
+        { error: "No fields to update" },
+        { status: 400 }
+      );
+    }
+
+    const exists = await db
+      .select({ id: events.id })
+      .from(events)
+      .where(eq(events.id, eventId))
+      .limit(1);
+
+    if (exists.length === 0) {
+      return NextResponse.json(
+        { error: "Event ID not found" },
+        { status: 404 }
+      );
+    }
+    // updating isActive sttaus instead of deleting for auditing
+    await db
+      .update(events)
+      .set({ isActive: false })
+      .where(eq(events.id, eventId));
+    await redis.set(
+      key,
+      JSON.stringify({ id: eventId }),
+      "EX",
+      IDEMPOTENCY_TTL
+    );
+
+    return NextResponse.json(
+      { id: eventId, message: "Event Deleted" },
+      { status: 200 }
+    );
   } catch (err) {
     console.error(err);
     return NextResponse.json(

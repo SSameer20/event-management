@@ -4,12 +4,15 @@ import {
   text,
   datetime,
   boolean,
+  decimal,
   mysqlEnum,
 } from "drizzle-orm/mysql-core";
 import { sql } from "drizzle-orm";
 
 export const events = mysqlTable("events", {
-  id: varchar("id", { length: 36 }).primaryKey(),
+  id: varchar("id", { length: 36 })
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
 
   title: varchar("title", { length: 255 }).notNull(),
 
@@ -33,8 +36,13 @@ export const events = mysqlTable("events", {
   createdAt: datetime("created_at")
     .notNull()
     .default(sql`CURRENT_TIMESTAMP`),
+  eventType: mysqlEnum("event_type", ["FREE", "PAID"])
+    .notNull()
+    .default("FREE"),
+  price: decimal("price", { precision: 10, scale: 2 }),
 
   updatedAt: datetime("updated_at")
     .notNull()
     .default(sql`CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP`),
+  isActive: boolean("is_active").notNull().default(true),
 });

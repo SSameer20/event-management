@@ -10,7 +10,9 @@ import { sql } from "drizzle-orm";
 export const users = mysqlTable(
   "users",
   {
-    id: varchar("id", { length: 36 }).primaryKey(),
+    id: varchar("id", { length: 36 })
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
 
     address: varchar("wallet_address", { length: 64 }).notNull(),
 
