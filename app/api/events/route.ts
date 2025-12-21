@@ -4,6 +4,7 @@ import { events } from "@/db/schema/event";
 import { createEventSchema } from "@/lib/validators/event";
 import redis, { redis_key, IDEMPOTENCY_TTL } from "@/lib/redis";
 import { count, desc, eq } from "drizzle-orm";
+import { tags } from "@/db/schema/tags";
 type RouteParams = {
   params: {
     id: string;
@@ -46,18 +47,24 @@ export async function POST(req: Request) {
         : data.price
         ? Number(data.price).toPrecision(2)
         : null;
+    await db.transaction(async (tx) => {
+      const [event] = await db
+        .insert(events)
+        .values({
+          title: data.title,
+          description: data.description,
+          startTime: new Date(data.startTime),
+          endTime: new Date(data.endTime),
+          timezone: data.timezone,
+          locationType: data.locationType,
+          location: data.location,
+          isPublic: data.isPublic ?? false,
+          price: data.price,
+          eventType: data.eventType ?? "FREE",
+        })
+        .$returningId();
 
-    await db.insert(events).values({
-      title: data.title,
-      description: data.description,
-      startTime: new Date(data.startTime),
-      endTime: new Date(data.endTime),
-      timezone: data.timezone,
-      locationType: data.locationType,
-      location: data.location,
-      isPublic: data.isPublic ?? false,
-      price: data.price,
-      eventType: data.eventType ?? "FREE",
+      // const updateTags = await db.insert(tags).values();
     });
     await redis.set(
       key,
