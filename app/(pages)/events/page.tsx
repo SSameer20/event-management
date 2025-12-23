@@ -16,7 +16,7 @@ import {
 import { getAllEvents, getAllEventsDetails } from "@/services/eventServices";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useMemo, useState } from "react";
-import { Event, EventDetailsResponse } from "@/events";
+import { Event, EventDetailsResponse } from "@/types/events";
 import { formatEventDate } from "@/lib/helper";
 
 const STATUS_MAP: Record<string, EventStatus> = {

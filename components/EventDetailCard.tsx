@@ -1,4 +1,4 @@
-import { Event } from "@/events";
+import { Event } from "@/types/events";
 import { formatEventDate } from "@/lib/helper";
 import { cn } from "@/lib/utils";
 import Image from "next/image";

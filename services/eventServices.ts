@@ -4,7 +4,7 @@ import {
   EventDetailsResponse,
   EventResponse,
   EventsResponse,
-} from "@/events";
+} from "@/types/events";
 
 export const getAllEvents = async (
   page = 1,

@@ -9,7 +9,7 @@ import { getEventDetails } from "@/services/eventServices";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import { Event } from "@/events";
+import { Event } from "@/types/events";
 
 export default function page() {
   const params = useParams();

@@ -1,5 +1,5 @@
 import { Card, CardContent } from "./ui/card";
-import { EventDetailsResponse } from "@/events";
+import { EventDetailsResponse } from "@/types/events";
 
 type OverviewItem = {
   title: string;

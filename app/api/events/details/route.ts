@@ -4,12 +4,7 @@ import redis, { redis_key, IDEMPOTENCY_TTL } from "@/lib/redis";
 import { count } from "console";
 import { and, desc, eq, gte, lte, sql } from "drizzle-orm";
 import { NextResponse } from "next/server";
-type RouteParams = {
-  params: {
-    id: string;
-  };
-};
-export async function GET(req: Request, { params }: RouteParams) {
+export async function GET(req: Request) {
   try {
     const key = redis_key("event", "get", `details`);
     const cached = await redis.get(key);

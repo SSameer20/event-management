@@ -5,12 +5,6 @@ import { createEventSchema } from "@/lib/validators/event";
 import redis, { redis_key, IDEMPOTENCY_TTL } from "@/lib/redis";
 import { count, desc, eq } from "drizzle-orm";
 
-type RouteParams = {
-  params: {
-    id: string;
-  };
-};
-
 export async function POST(req: Request) {
   try {
     const idempotencyKey = req.headers.get("Idempotency-Key");
@@ -89,7 +83,7 @@ export async function POST(req: Request) {
     );
   }
 }
-export async function GET(req: Request, { params }: RouteParams) {
+export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
 

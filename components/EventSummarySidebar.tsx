@@ -1,4 +1,4 @@
-import { Event } from "@/events";
+import { Event } from "@/types/events";
 import React from "react";
 
 type EventDetails = {
