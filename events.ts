@@ -1,22 +1,23 @@
-export type EventStatus = "DRAFT" | "PUBLISHED" | "CANCELLED";
-export type EventType = "FREE" | "PAID";
-export type LocationType = "PHYSICAL" | "ONLINE";
+export type MainStatus = "UPCOMING" | "COMPLETED" | "CANCELLED";
 
 export type Event = {
   id: string;
+  image: string;
   title: string;
   description: string;
   startTime: string;
   endTime: string;
   timezone: string;
-  locationType: LocationType;
+  locationType: "PHYSICAL" | "VIRTUAL";
   location: string;
-  status: EventStatus;
+  status: MainStatus;
+  eventStatus: "UPCOMING" | "COMPLETED" | "CANCELLED" | "ONGOING";
   isPublic: boolean;
   createdAt: string;
   updatedAt: string;
-  eventType: EventType;
-  price: string | null;
+  eventType: "FREE" | "PAID";
+  price: number | null;
+  isActive: boolean;
 };
 
 export type PaginationMeta = {
@@ -33,6 +34,13 @@ export type EventsResponse = {
   message: string;
   meta: PaginationMeta;
 };
+export type EventResponse = {
+  success: boolean;
+  error: boolean;
+  data: Event;
+  message: string;
+  meta: PaginationMeta;
+};
 
 export type EventDetailsResponse = {
   success: boolean;
@@ -45,4 +53,18 @@ export type EventDetailsResponse = {
     ongoing: number;
   };
   message: string;
+};
+
+export type CreatePostData = {
+  title?: string;
+  description?: string;
+  image?: string;
+  startTime?: string; // ISO string
+  endTime?: string; // ISO string
+  timezone?: string;
+  locationType?: "PHYSICAL" | "VIRTUAL";
+  location?: string;
+  isPublic?: boolean;
+  eventType?: "FREE" | "PAID";
+  price?: number | null;
 };

@@ -1,14 +1,35 @@
+import { Event } from "@/events";
+import { formatEventDate } from "@/lib/helper";
+import { cn } from "@/lib/utils";
+import Image from "next/image";
 import React from "react";
 
-export const EventDetailCard: React.FC = () => {
+interface EventDetailCardProps {
+  eventDetails?: Event | null;
+}
+
+export const EventDetailCard: React.FC<EventDetailCardProps> = ({
+  eventDetails,
+}) => {
+  if (!eventDetails) {
+    return (
+      <div className="rounded-2xl border border-[#21262d] bg-[#0d1117] p-4 shadow-xl">
+        Loading...
+      </div>
+    );
+  }
   return (
     <div className="rounded-2xl border border-[#21262d] bg-[#0d1117] p-4 shadow-xl">
       {/* Cover Image */}
       <div className="relative h-64 w-full overflow-hidden rounded-xl bg-gray-800">
-        <img
-          src="https://images.unsplash.com/photo-1508344928928-7165b67de128?auto=format&fit=crop&q=80&w=1200"
-          alt="Baseball Field"
+        <Image
+          src={
+            eventDetails.image ||
+            "https://images.pexels.com/photos/831079/pexels-photo-831079.jpeg"
+          }
+          alt={eventDetails.title}
           className="h-full w-full object-cover opacity-80"
+          fill
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
       </div>
@@ -18,67 +39,39 @@ export const EventDetailCard: React.FC = () => {
         <div className="flex items-end justify-between">
           <div className="flex items-end gap-5">
             <div className="h-24 w-24 overflow-hidden rounded-full border-4 border-[#0d1117] bg-[#161b22] shadow-2xl">
-              <img
-                src="https://picsum.photos/seed/pepper/200/200"
-                alt="Team Logo"
+              <Image
+                src={
+                  eventDetails.image ||
+                  "https://picsum.photos/seed/pepper/200/200"
+                }
+                alt="Event Logo"
                 className="h-full w-full object-cover"
+                width={200}
+                height={200}
               />
             </div>
             <div className="mb-2">
               <div className="flex items-center gap-3">
                 <h1 className="text-2xl font-bold text-white">
-                  Gastonia Ghost Peppers vs. Charleston Dirty Bir...
+                  {eventDetails.title}
                 </h1>
-                <span className="inline-flex items-center gap-1.5 rounded-full bg-[#24292e] px-2.5 py-0.5 text-[10px] font-medium text-[#8b949e] border border-[#30363d]">
+                <span
+                  className={cn(
+                    "inline-flex items-center gap-1.5 rounded-full  px-2.5 py-0.5 text-[10px] font-medium  border border-[#30363d]",
+                    eventDetails.status == "UPCOMING"
+                      ? "bg-green-100 text-black"
+                      : "bg-[#8b949e]"
+                  )}
+                >
+                  <span className={cn("h-1.5 w-1.5 rounded-full bg-black")} />{" "}
+                  {eventDetails.status}
+                </span>
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-[#24292e] px-2.5 py-0.5 text-[10px] font-medium text-[#8b949e] border border-[#30363d] ml-2">
                   <span className="h-1.5 w-1.5 rounded-full bg-[#8b949e]" />{" "}
-                  Draft
+                  {"General"}
                 </span>
                 <div className="flex items-center gap-2 ml-4">
-                  <button className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#21262d] text-[#8b949e] hover:text-white transition-colors border border-[#30363d]">
-                    <svg
-                      className="h-4 w-4"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-                        strokeWidth={2}
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                    </svg>
-                  </button>
-                  <button className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#21262d] text-[#8b949e] hover:text-white transition-colors border border-[#30363d]">
-                    <svg
-                      className="h-4 w-4"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"
-                        strokeWidth={2}
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                    </svg>
-                  </button>
-                  <button className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#21262d] text-[#8b949e] hover:text-red-400 transition-colors border border-[#30363d]">
-                    <svg
-                      className="h-4 w-4"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                        strokeWidth={2}
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                    </svg>
-                  </button>
+                  {/* Action buttons can remain as is or be customized */}
                 </div>
               </div>
             </div>
@@ -86,9 +79,7 @@ export const EventDetailCard: React.FC = () => {
         </div>
 
         <p className="mt-6 text-sm text-[#8b949e] max-w-4xl leading-relaxed">
-          The Gastonia Ghost Peppers are a professional baseball team based in
-          Gastonia, NC, bringing exciting games and a passionate fan experience
-          to the local community.
+          {eventDetails.description}
         </p>
 
         {/* Detailed Info Grid */}
@@ -109,8 +100,16 @@ export const EventDetailCard: React.FC = () => {
                 </svg>
               </div>
               <span>
-                26 July, 2025 - 30 July, 2025{" "}
-                <span className="text-[#8b949e]">(GMT-6 Central Time)</span>
+                {formatEventDate(
+                  new Date(eventDetails.startTime).toLocaleString()
+                )}{" "}
+                -{" "}
+                {formatEventDate(
+                  new Date(eventDetails.endTime).toLocaleString()
+                )}{" "}
+                <span className="text-[#8b949e]">
+                  ({eventDetails.timezone})
+                </span>
               </span>
             </div>
             <div className="flex items-center gap-4 text-sm text-[#c9d1d9]">
@@ -127,7 +126,7 @@ export const EventDetailCard: React.FC = () => {
                   />
                 </svg>
               </div>
-              <span>Sports, Baseball</span>
+              <span>General</span>
             </div>
             <div className="flex items-center gap-4 text-sm text-[#c9d1d9]">
               <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#3b82f6]/20 text-[#3b82f6]">
@@ -144,7 +143,7 @@ export const EventDetailCard: React.FC = () => {
                   <path d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" strokeWidth={2} />
                 </svg>
               </div>
-              <span>First Horizon Park, Jr Gilliam Wy, Nashville, TN</span>
+              <span>{eventDetails.location}</span>
             </div>
           </div>
 
@@ -154,20 +153,26 @@ export const EventDetailCard: React.FC = () => {
                 Policy
               </span>
               <p className="mt-1 text-sm font-medium text-[#c9d1d9]">
-                Gastonia Ghost Peppers Policy
+                {eventDetails.isPublic ? "Public Event" : "Private Event"}
               </p>
             </div>
             <div className="rounded-xl border border-[#21262d] bg-[#161b22]/40 p-4">
               <span className="text-[10px] uppercase font-bold text-[#8b949e]">
-                Organizer
+                Price
               </span>
               <div className="mt-2 flex items-center gap-2">
-                <img
-                  src="https://picsum.photos/seed/organizer/20/20"
-                  className="h-5 w-5 rounded-full"
-                />
                 <span className="text-sm font-medium text-[#c9d1d9]">
-                  Gastonia Ghost Peppers
+                  {eventDetails.price ? `$${eventDetails.price}` : "Free"}
+                </span>
+              </div>
+            </div>
+            <div className="rounded-xl border border-[#21262d] bg-[#161b22]/40 p-4">
+              <span className="text-[10px] uppercase font-bold text-[#8b949e]">
+                Active
+              </span>
+              <div className="mt-2 flex items-center gap-2">
+                <span className="text-sm font-medium text-[#c9d1d9]">
+                  {eventDetails.isActive ? "Yes" : "No"}
                 </span>
               </div>
             </div>

@@ -4,6 +4,7 @@ import Navigation from "@/components/navigation";
 import OverviewCard from "@/components/overview-card";
 import { Pagination } from "@/components/pagination";
 import { StatusBadge, EventStatus } from "@/components/status-badge";
+import { nanoid } from "nanoid";
 import {
   Table,
   TableBody,
@@ -66,6 +67,13 @@ export default function EventsPage() {
     );
   }, [events, searchTerm]);
 
+  function processCreateEventPage() {
+    const IdKey = localStorage.getItem("IdompotentKey");
+    if (IdKey) localStorage.removeItem("IdompotentKey");
+    const NewIdKEy = nanoid(21);
+    localStorage.setItem("IdompotentKey", NewIdKEy);
+    window.location.href = "/events/create";
+  }
   if (isLoading) {
     return (
       <div className="h-screen flex items-center justify-center text-white">
@@ -136,7 +144,10 @@ export default function EventsPage() {
               </div>
 
               {/* Create */}
-              <button className="flex items-center gap-2 h-10 px-4 bg-[#1d4ed8] rounded-lg text-sm font-medium text-white hover:bg-[#2563eb] transition-colors">
+              <button
+                className="flex items-center gap-2 h-10 px-4 bg-[#1d4ed8] rounded-lg text-sm font-medium text-white hover:bg-[#2563eb] transition-colors"
+                onClick={processCreateEventPage}
+              >
                 + Create Event
               </button>
             </div>
@@ -160,6 +171,7 @@ export default function EventsPage() {
                 <TableRow
                   key={event.id}
                   className="border-b border-white/5 hover:bg-white/4 transition-colors"
+                  onClick={() => (window.location.href = `/events/${event.id}`)}
                 >
                   <TableCell>
                     <div className="flex items-center gap-3">
@@ -176,7 +188,9 @@ export default function EventsPage() {
                   </TableCell>
 
                   <TableCell className="text-[#8b949e]">
-                    {event.location}
+                    {event.locationType == "PHYSICAL"
+                      ? event.location
+                      : event.locationType}
                   </TableCell>
 
                   <TableCell className="text-left text-[#c9d1d9]">0</TableCell>
@@ -189,7 +203,7 @@ export default function EventsPage() {
 
                   <TableCell>
                     <button className="text-[#8b949e] hover:text-[#c9d1d9] transition-colors p-1">
-                      ⋮
+                      details
                     </button>
                   </TableCell>
                 </TableRow>

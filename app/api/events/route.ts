@@ -42,29 +42,36 @@ export async function POST(req: Request) {
     const data = parsed.data;
     // normalizing price
     data.price =
-      data.eventType == "FREE"
+      data.eventType === "FREE"
         ? null
-        : data.price
-        ? Number(data.price).toPrecision(2)
+        : data.price != null
+        ? Math.round(Number(data.price) * 100) / 100
         : null;
+
     await db.transaction(async (tx) => {
       const [event] = await db
         .insert(events)
         .values({
-          title: data.title,
-          description: data.description,
-          startTime: new Date(data.startTime),
-          endTime: new Date(data.endTime),
-          timezone: data.timezone,
-          locationType: data.locationType,
-          location: data.location,
+          title: data.title ?? "Untitled Event",
+          image:
+            data.image ??
+            "https://images.pexels.com/photos/3874719/pexels-photo-3874719.jpeg",
+          description: data.description ?? "",
+          startTime: new Date(data.startTime!),
+          endTime: new Date(data.endTime!),
+          timezone: data.timezone ?? "UTC",
+          locationType: data.locationType ?? "VIRTUAL",
+          location: data.location ?? "",
           isPublic: data.isPublic ?? false,
-          price: data.price,
           eventType: data.eventType ?? "FREE",
+          price:
+            data.eventType === "FREE"
+              ? null
+              : data.price != null
+              ? data.price.toFixed(2) // ✅ STRING
+              : null,
         })
         .$returningId();
-
-      // const updateTags = await db.insert(tags).values();
     });
     await redis.set(
       key,
@@ -100,6 +107,7 @@ export async function GET(req: Request, { params }: RouteParams) {
     const data = await db
       .select({
         id: events.id,
+        image: events.image,
         title: events.title,
         description: events.description,
         startTime: events.startTime,

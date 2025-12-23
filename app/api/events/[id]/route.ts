@@ -32,6 +32,7 @@ export async function GET(req: Request, context: RouteContext) {
     const [event] = await db
       .select({
         id: events.id,
+        image: events.image,
         title: events.title,
         description: events.description,
         startTime: events.startTime,
@@ -107,7 +108,7 @@ export async function PUT(req: Request, context: RouteContext) {
       return NextResponse.json({ error: "Event not found" }, { status: 404 });
     }
 
-    const updateData: UpdateEvent = {};
+    const updateData: Partial<UpdateEvent> = {};
 
     if (parsed.data.title) updateData.title = parsed.data.title;
     if (parsed.data.description)
@@ -117,12 +118,10 @@ export async function PUT(req: Request, context: RouteContext) {
       updateData.locationType = parsed.data.locationType;
     if (parsed.data.location) updateData.location = parsed.data.location;
     if (parsed.data.status) updateData.status = parsed.data.status;
-    if (parsed.data.isPublic !== undefined)
+    if (typeof parsed.data.isPublic === "boolean")
       updateData.isPublic = parsed.data.isPublic;
-
     if (parsed.data.startTime)
       updateData.startTime = new Date(parsed.data.startTime);
-
     if (parsed.data.endTime) updateData.endTime = new Date(parsed.data.endTime);
 
     await db
