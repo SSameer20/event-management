@@ -1,7 +1,9 @@
 import { Card, CardContent } from "./ui/card";
+import { EventDetailsResponse } from "@/events";
 
 type OverviewItem = {
   title: string;
+  type: keyof EventDetailsResponse["data"];
   value: string;
   change: number;
   iconBg: string;
@@ -11,6 +13,7 @@ type OverviewItem = {
 const MOCK_DATA: OverviewItem[] = [
   {
     title: "Total events",
+    type: "total",
     value: "1,205",
     change: 10,
     iconBg: "bg-yellow-500",
@@ -23,6 +26,7 @@ const MOCK_DATA: OverviewItem[] = [
   },
   {
     title: "Upcoming events",
+    type: "upcoming",
     value: "112",
     change: 12,
     iconBg: "bg-blue-500",
@@ -35,6 +39,7 @@ const MOCK_DATA: OverviewItem[] = [
   },
   {
     title: "Ongoing events",
+    type: "ongoing",
     value: "5",
     change: -12,
     iconBg: "bg-green-500",
@@ -48,6 +53,7 @@ const MOCK_DATA: OverviewItem[] = [
   },
   {
     title: "Cancelled events",
+    type: "cancelled",
     value: "105",
     change: +12,
     iconBg: "bg-red-500",
@@ -68,13 +74,21 @@ const MOCK_DATA: OverviewItem[] = [
     ),
   },
 ];
+type cardProps = {
+  data: EventDetailsResponse["data"] | null;
+};
+export default function OverviewCard({ data }: cardProps) {
+  if (!data) {
+    <div className="w-full flex justify-center items-center">
+      <span>Please try again</span>
+    </div>;
+  }
 
-export default function OverviewCard() {
   return (
     <div className="grid grid-cols-1 md:grid-cols-4 gap-10 mt-10">
       {MOCK_DATA.map((item) => {
         const isPositive = item.change >= 0;
-
+        const value = data?.[item.type];
         return (
           <Card
             key={item.title}
@@ -100,7 +114,7 @@ export default function OverviewCard() {
               </div>
 
               {/* Value */}
-              <div className="text-3xl font-semibold mb-4">{item.value}</div>
+              <div className="text-3xl font-semibold mb-4">{value}</div>
 
               {/* Footer */}
               <div className="flex items-center gap-2 text-sm">

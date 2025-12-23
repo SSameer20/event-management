@@ -5,64 +5,8 @@
     {
       "idx": 0,
       "version": "5",
-      "when": 1766189501977,
-      "tag": "0000_woozy_carmella_unuscione",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "5",
-      "when": 1766190053489,
-      "tag": "0001_dazzling_mikhail_rasputin",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "5",
-      "when": 1766236168524,
-      "tag": "0002_gray_tana_nile",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "5",
-      "when": 1766242139870,
-      "tag": "0003_goofy_goliath",
-      "breakpoints": true
-    },
-    {
-      "idx": 4,
-      "version": "5",
-      "when": 1766264543462,
-      "tag": "0004_harsh_kat_farrell",
-      "breakpoints": true
-    },
-    {
-      "idx": 5,
-      "version": "5",
-      "when": 1766265080027,
-      "tag": "0005_cooing_wrecking_crew",
-      "breakpoints": true
-    },
-    {
-      "idx": 6,
-      "version": "5",
-      "when": 1766302386900,
-      "tag": "0006_worthless_george_stacy",
-      "breakpoints": true
-    },
-    {
-      "idx": 7,
-      "version": "5",
-      "when": 1766303431523,
-      "tag": "0007_plain_warbound",
-      "breakpoints": true
-    },
-    {
-      "idx": 8,
-      "version": "5",
-      "when": 1766324136477,
-      "tag": "0008_unique_red_shift",
+      "when": 1766480852960,
+      "tag": "0000_absent_nemesis",
       "breakpoints": true
     }
   ]

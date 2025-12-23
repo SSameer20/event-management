@@ -12,10 +12,10 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { getAllEvents } from "@/services/eventServices";
+import { getAllEvents, getAllEventsDetails } from "@/services/eventServices";
 import { useQuery } from "@tanstack/react-query";
-import { useMemo, useState } from "react";
-import { Event } from "@/events";
+import { useEffect, useMemo, useState } from "react";
+import { Event, EventDetailsResponse } from "@/events";
 import { formatEventDate } from "@/lib/helper";
 
 const STATUS_MAP: Record<string, EventStatus> = {
@@ -27,6 +27,9 @@ const STATUS_MAP: Record<string, EventStatus> = {
 
 export default function EventsPage() {
   const [searchTerm, setSearchTerm] = useState("");
+  const [eventDetails, setEventDetails] = useState<
+    EventDetailsResponse["data"] | null
+  >(null);
 
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
@@ -36,8 +39,24 @@ export default function EventsPage() {
     queryFn: () => getAllEvents(page, limit),
   });
 
-  const events: Event[] = data?.events ?? [];
+  const {
+    data: details,
+    isLoading: detailsLoading,
+    isError: detailsError,
+    refetch: detailsRefetch,
+  } = useQuery({
+    queryKey: ["event_details"],
+    queryFn: getAllEventsDetails,
+    refetchInterval: 10 * 1000,
+  });
 
+  useEffect(() => {
+    if (details) {
+      setEventDetails(details);
+    }
+  }, [details]);
+
+  const events: Event[] = data?.events ?? [];
   const filteredEvents = useMemo(() => {
     const term = searchTerm.toLowerCase();
     return events.filter(
@@ -79,7 +98,7 @@ export default function EventsPage() {
           <span className="ml-1 text-[#8b949e] font-normal">0</span>
         </h1>
 
-        <OverviewCard />
+        <OverviewCard data={eventDetails} />
 
         {/* Table Section */}
         <div className="rounded-xl border-0 bg-linear-to-br from-[#11151c] via-[#151b26] to-[#181e29] overflow-hidden p-10 my-10">

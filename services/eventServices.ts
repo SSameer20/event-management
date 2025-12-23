@@ -1,5 +1,5 @@
 import { api, getURL } from "@/config/api";
-import { EventsResponse } from "@/events";
+import { EventDetailsResponse, EventsResponse } from "@/events";
 
 export const getAllEvents = async (
   page = 1,
@@ -21,4 +21,17 @@ export const getAllEvents = async (
     events: data.data,
     meta: data.meta,
   };
+};
+
+export const getAllEventsDetails = async (): Promise<
+  EventDetailsResponse["data"]
+> => {
+  const response = await fetch(`${getURL("EVENTS_DETAILS")}`);
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch events");
+  }
+
+  const data: EventDetailsResponse = await response.json();
+  return data.data;
 };

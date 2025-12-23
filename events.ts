@@ -33,3 +33,16 @@ export type EventsResponse = {
   message: string;
   meta: PaginationMeta;
 };
+
+export type EventDetailsResponse = {
+  success: boolean;
+  error: boolean;
+  data: {
+    total: number;
+    upcoming: number;
+    completed: number;
+    cancelled: number;
+    ongoing: number;
+  };
+  message: string;
+};

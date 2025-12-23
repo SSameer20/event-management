@@ -4,8 +4,7 @@ import { events } from "@/db/schema/event";
 import { createEventSchema } from "@/lib/validators/event";
 import redis, { redis_key, IDEMPOTENCY_TTL } from "@/lib/redis";
 import { count, desc, eq } from "drizzle-orm";
-import { tags } from "@/db/schema/tags";
-import { EventsResponse } from "@/events";
+
 type RouteParams = {
   params: {
     id: string;

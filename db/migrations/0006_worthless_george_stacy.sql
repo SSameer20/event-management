@@ -1,1 +1,0 @@
-ALTER TABLE `events` ADD `price` decimal(10,2) NOT NULL;

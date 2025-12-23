@@ -1,1 +1,0 @@
-ALTER TABLE `events` MODIFY COLUMN `price` decimal(10,2);

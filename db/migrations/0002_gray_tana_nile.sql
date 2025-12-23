@@ -1,1 +1,0 @@
-ALTER TABLE `events` ADD `is_active` boolean DEFAULT true NOT NULL;

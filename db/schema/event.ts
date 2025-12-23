@@ -15,6 +15,7 @@ export const events = mysqlTable("events", {
     .$defaultFn(() => crypto.randomUUID()),
 
   title: varchar("title", { length: 255 }).notNull(),
+  image: text("image"),
 
   description: text("description").notNull(),
 
@@ -26,8 +27,11 @@ export const events = mysqlTable("events", {
   locationType: mysqlEnum("location_type", ["PHYSICAL", "VIRTUAL"]).notNull(),
 
   location: varchar("location", { length: 255 }).notNull(),
+  status: mysqlEnum("status", ["UPCOMING", "COMPLETED", "CANCELLED"])
+    .notNull()
+    .default("UPCOMING"),
 
-  status: mysqlEnum("status", ["DRAFT", "PUBLISHED", "CANCELLED"])
+  eventStatus: mysqlEnum("event_status", ["DRAFT", "PUBLISHED", "CANCELLED"])
     .notNull()
     .default("DRAFT"),
 
